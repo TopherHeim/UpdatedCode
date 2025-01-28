@@ -40,7 +40,6 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private final Field2d field2d = new Field2d(); 
 
     private final SendableChooser<Command> autoChooser;
 
@@ -100,8 +99,6 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-
-        SmartDashboard.putData("Field", field2d);
 
 
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -181,10 +178,6 @@ public class RobotContainer {
 
         // Configure the button bindings
         configureButtonBindings();
-    }
-    public void updateField(Pose2d robotPose) {
-        // Update the robot's pose on the field
-        field2d.setRobotPose(robotPose);
     }
 
 
