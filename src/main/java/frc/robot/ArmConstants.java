@@ -5,11 +5,10 @@ public interface ArmConstants {
     public final int shooterId1 = 9;
     public final int shooterId2 = 11;
 
-    public final int suckyId = 10;
-    public final int suckyMoveId = 12;
+    public final int intakeId = 0;
+    public final int elevatorId = 0;
 
-    public final int climbId1 = 18;
-    public final int climbId2 = 19;
+    public final int climbId = 0;
 
     public final int actuatorId = 20;
 

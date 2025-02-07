@@ -1,5 +1,12 @@
 {
   "version": "2025.0",
+  "startingPose":{
+    "position": {
+      "x": 8.025
+      "y": 7.547
+    },
+    "rotation": 180
+  },
   "command": {
     "type": "sequential",
     "data": {

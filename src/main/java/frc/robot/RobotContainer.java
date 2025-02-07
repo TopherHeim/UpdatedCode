@@ -14,8 +14,10 @@ import frc.robot.commands.*;
 import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.ArmStuff.Actuator;
+import frc.robot.subsystems.ArmStuff.Actuator2;
 import frc.robot.subsystems.ArmStuff.Climber;
 import frc.robot.subsystems.ArmStuff.Shooter;
+import frc.robot.commands.DriveToAprilTag;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -60,27 +62,27 @@ public class RobotContainer {
 
     /* Upper Controls */
     private final int movePickUpArm = XboxController.Axis.kRightX.value;
-    private final int pickUp = XboxController.Axis.kLeftY.value;
+    //private final int pickUp = XboxController.Axis.kLeftY.value;
     private final int shooterAim = XboxController.Axis.kLeftX.value;
-    private final int climbDown1 = XboxController.Axis.kRightTrigger.value;
-    private final int climbDown2 = XboxController.Axis.kLeftTrigger.value;
+    private final int climbUp = XboxController.Axis.kRightTrigger.value;
+    private final int climbDown = XboxController.Axis.kLeftTrigger.value;
     //private final int climbUp = XboxController.Axis.kRightY.value;
-    private final int shooterShoot = XboxController.Axis.kRightTrigger.value;
+    private final int actuator2Move = XboxController.Axis.kLeftY.value;
 
     /* Upper Buttons */
     //private final JoystickButton shooterSpeedOne = new JoystickButton(upper, XboxController.Button.kA.value);
-    private final JoystickButton fastMode = new JoystickButton(upper, XboxController.Button.kB.value);
+    private final JoystickButton retractActuator = new JoystickButton(upper, XboxController.Button.kB.value);
     private final JoystickButton fastMode2 = new JoystickButton(upper, XboxController.Button.kX.value);
-    private final JoystickButton pickUpFloorPoint = new JoystickButton(upper, XboxController.Button.kY.value);
+    private final JoystickButton extendActuator = new JoystickButton(upper, XboxController.Button.kY.value);
     private final JoystickButton actuatorZero = new JoystickButton(upper, XboxController.Button.kLeftBumper.value);
     private final JoystickButton actuatorShoot = new JoystickButton(upper, XboxController.Button.kRightBumper.value);
-    private final JoystickButton climbUp = new JoystickButton(driver, XboxController.Button.kY.value);
+    //private final JoystickButton climbUp = new JoystickButton(driver, XboxController.Button.kY.value);
 
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kX.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton dampen = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
-    private final JoystickButton zeroWheels = new JoystickButton(driver, XboxController.Button.kB.value);
+    private final JoystickButton DriveToApril = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton setIntegratedToZero = new JoystickButton(driver, XboxController.Button.kY.value);
     private final POVButton up = new POVButton(driver, 90);
     private final POVButton down = new POVButton(driver, 270);
@@ -90,6 +92,7 @@ public class RobotContainer {
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final Shooter shooter = new Shooter();
+    private final Actuator2 actuator2 = new Actuator2();
     private final Actuator actuator = new Actuator();
     private final Climber climb = new Climber();
     private final PoseEstimator s_PoseEstimator = new PoseEstimator();
@@ -100,10 +103,7 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
 
-
         autoChooser = AutoBuilder.buildAutoChooser();
-
-        
 
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
@@ -114,7 +114,7 @@ public class RobotContainer {
                 () -> false,
                 () -> dampen.getAsBoolean(),
                 () -> 1, //speed multiplier 
-                () -> zeroWheels.getAsBoolean(),
+                () -> DriveToApril.getAsBoolean(),
 		() -> setIntegratedToZero.getAsBoolean()
             )
         );
@@ -124,16 +124,16 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Chooser", autoChooser);
         
         // Comment these out when testing drive// 
-        /* 
-        shooter.setDefaultCommand(
-            new ShootRing(
-                shooter,
-                () -> upper.getRawAxis(shooterShoot),
-                () -> fastMode.getAsBoolean(),
-                () -> fastMode2.getAsBoolean()
+        
+        actuator2.setDefaultCommand(
+            new Actuator2Run(
+                actuator2,
+                () -> extendActuator.getAsBoolean(),
+                () -> retractActuator.getAsBoolean()
             )
         );
         
+        /* 
         pickUpper.setDefaultCommand(
             new PickerUp(
                 pickUpper,
@@ -152,13 +152,12 @@ public class RobotContainer {
                 () -> actuatorShoot.getAsBoolean()
             )
         );
-        
+         */
         climb.setDefaultCommand(
             new Climb(
                 climb,
-                () -> climbUp.getAsBoolean(),
-                () -> driver.getRawAxis(climbDown1),
-                () -> driver.getRawAxis(climbDown2)
+                () -> driver.getRawAxis(climbUp),
+                () -> driver.getRawAxis(climbDown)
             )
         );
         /*
@@ -171,14 +170,15 @@ public class RobotContainer {
         */
         
         
-        
-
+    
 
 
 
         // Configure the button bindings
         configureButtonBindings();
     }
+
+
 
 
     /**
@@ -190,6 +190,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+        
 
 
         //heading lock bindings

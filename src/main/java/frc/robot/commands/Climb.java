@@ -1,4 +1,4 @@
-/*package frc.robot.commands;
+package frc.robot.commands;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -8,45 +8,30 @@ import frc.robot.subsystems.ArmStuff.Climber;
 
 public class Climb extends Command {
     private Climber climb;
-    private BooleanSupplier up;
-    private DoubleSupplier down1;
-    private DoubleSupplier down2;
+    private DoubleSupplier up;
+    private DoubleSupplier down;
 
-    public Climb(Climber climb, BooleanSupplier up, DoubleSupplier down1, DoubleSupplier down2){
+    public Climb(Climber climb, DoubleSupplier up, DoubleSupplier down){
         this.climb = climb;
         addRequirements(climb);
         this.up = up;
-        this.down1 = down1;
-        this.down2 = down2;
+        this.down = down;
     }
 
     @Override
     public void execute(){
-        if (up.getAsBoolean()){
-            climb.climbUp(0.4);
-        }//Sup Boi
-        else if(down1.getAsDouble() < 0.1 && down2.getAsDouble() < 0.1) {
+
+        if (up.getAsDouble() > 0.075){
+            climb.climbUp(up.getAsDouble());
+        }
+        else if (down.getAsDouble() > 0.075){
+            climb.climbDown(up.getAsDouble()*-1);
+        }
+        else{
             climb.climbUp(0);
         }
-
-        if (down1.getAsDouble() > 0.1){
-            climb.climbD1(down1.getAsDouble() *-1);
-        }
-        else if(up.getAsBoolean() != true){
-            climb.climbD1(0);
-        }
-        
-
-        if (down2.getAsDouble() > 0.1){
-            climb.climbD2(down2.getAsDouble() *-1);
-        }
-        else if(up.getAsBoolean() != true){
-            climb.climbD2(0);
-        }
-
 
     }
 
     
 }
-*/

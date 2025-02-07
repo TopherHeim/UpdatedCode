@@ -4,6 +4,7 @@ import frc.lib.math.GeometryUtils;
 import frc.robot.LimelightHelpers;
 import frc.robot.RobotContainer;
 import frc.robot.SwerveConstants;
+import frc.robot.commands.DriveToAprilTag;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -36,6 +37,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -44,6 +46,20 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Relay.Value;
+import java.util.List;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
+import frc.robot.Utility;
 
 
 
@@ -55,6 +71,7 @@ public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
     public AHRS gyro = null;
+    
     public static Relay lightFr;
     public static Relay lightFl;
     public static Relay lightBr;
@@ -89,21 +106,6 @@ public class Swerve extends SubsystemBase {
             new SwerveMod(3, SwerveConstants.Swerve.Mod3.constants)
         };
 
-        m_poseEstimator =
-            new SwerveDrivePoseEstimator(
-            SwerveConfig.swerveKinematics,
-            gyro.getRotation2d(),
-            new SwerveModulePosition[] {
-                mSwerveMods[0].getPosition(), // Front left
-                mSwerveMods[1].getPosition(), // Front right
-                mSwerveMods[2].getPosition(), // Back left
-                mSwerveMods[3].getPosition() //Back right
-            },
-          new Pose2d(),
-          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
-
-
         swerveOdometry = new SwerveDriveOdometry(SwerveConfig.swerveKinematics, gyro.getRotation2d(), getModulePositions());
         zeroGyro();
         /*Good Job =D */
@@ -119,7 +121,7 @@ public class Swerve extends SubsystemBase {
     }
 
         AutoBuilder.configure(
-            this::getPosition, // Robot pose supplier
+            this::getAprilOdom, // Robot pose supplier
             this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
             this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             (speeds, forwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
@@ -142,6 +144,22 @@ public class Swerve extends SubsystemBase {
             this // Reference to this subsystem to set requirements
     );
         SmartDashboard.putBoolean("Configured", AutoBuilder.isConfigured());
+
+        
+        m_poseEstimator =
+            new SwerveDrivePoseEstimator(
+            SwerveConfig.swerveKinematics,
+            gyro.getRotation2d(),
+            new SwerveModulePosition[] {
+                mSwerveMods[0].getPosition(), // Front left
+                mSwerveMods[1].getPosition(), // Front right
+                mSwerveMods[2].getPosition(), // Back left
+                mSwerveMods[3].getPosition() //Back right
+            },
+          new Pose2d(),
+          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+
     }
     private static ChassisSpeeds correctForDynamics(ChassisSpeeds originalSpeeds) {
         final double LOOP_TIME_S = 0.02;
