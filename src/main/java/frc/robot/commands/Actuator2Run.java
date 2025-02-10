@@ -22,12 +22,15 @@ public class Actuator2Run extends Command{
     @Override
     public void execute(){
 
+        int counter = 1;
 
         if (extend.getAsBoolean() == true){
-            actuator.moveActuator2(1);
-        }
-        if (retract.getAsBoolean() == true){
-            actuator.moveActuator2(0);
+            if ((counter % 2) >= 1){
+                actuator.moveActuator2(1);
+            }
+            else if ((counter % 2) == 0){
+                actuator.moveActuator2(0);
+            }
         }
 
 

@@ -119,7 +119,6 @@ public class TeleopSwerve extends Command {
               Pose2d goalPos = AprilTagCoordinates.getPose2d(TagId);
               // Create path from current robot position to the new position
               List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(currentRobotPose, goalPos);
-            System.out.println(goalPos);
               PathPlannerPath path = new PathPlannerPath(
                   waypoints,
                   Constants.AprilTags.constraints,

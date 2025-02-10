@@ -14,7 +14,7 @@ class AprilTag {
         this.x = x / 39.37; // Convert inches to meters
         this.y = y / 39.37;
         this.z = z / 39.37;
-        this.zRotation = zRotation;
+        this.zRotation = zRotation - 180;
         this.yRotation = yRotation;
     }
 

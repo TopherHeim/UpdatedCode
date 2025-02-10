@@ -16,7 +16,7 @@ public final class Constants {
         // X is horizontal distance, Y is distance out from coral aprilTag -- half of bot width (bumpers included)
         public static final Translation2d coralOffset = new Translation2d(0, 1);
         //Slow for testing
-        public static final PathConstraints constraints = new PathConstraints(4.5, 4.5, 4.5, 1);
+        public static final PathConstraints constraints = new PathConstraints(3, 3, 5, 12.5664);
     }
     public static final double stickDeadband = 0.1;
    

@@ -17,7 +17,6 @@ import frc.robot.subsystems.ArmStuff.Actuator;
 import frc.robot.subsystems.ArmStuff.Actuator2;
 import frc.robot.subsystems.ArmStuff.Climber;
 import frc.robot.subsystems.ArmStuff.Shooter;
-import frc.robot.commands.DriveToAprilTag;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -74,8 +73,8 @@ public class RobotContainer {
     private final JoystickButton retractActuator = new JoystickButton(upper, XboxController.Button.kB.value);
     private final JoystickButton fastMode2 = new JoystickButton(upper, XboxController.Button.kX.value);
     private final JoystickButton extendActuator = new JoystickButton(upper, XboxController.Button.kY.value);
-    private final JoystickButton actuatorZero = new JoystickButton(upper, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton actuatorShoot = new JoystickButton(upper, XboxController.Button.kRightBumper.value);
+    private final JoystickButton shooterBackward = new JoystickButton(upper, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton shooterForward = new JoystickButton(upper, XboxController.Button.kRightBumper.value);
     //private final JoystickButton climbUp = new JoystickButton(driver, XboxController.Button.kY.value);
 
     /* Driver Buttons */
@@ -130,6 +129,14 @@ public class RobotContainer {
                 actuator2,
                 () -> extendActuator.getAsBoolean(),
                 () -> retractActuator.getAsBoolean()
+            )
+        );
+
+        shooter.setDefaultCommand(
+            new CoralShoot(
+                shooter,
+                () -> shooterForward.getAsBoolean(), 
+                () -> shooterBackward.getAsBoolean()
             )
         );
         
