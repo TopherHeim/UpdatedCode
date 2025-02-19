@@ -16,6 +16,7 @@ import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.ArmStuff.Actuator;
 import frc.robot.subsystems.ArmStuff.Actuator2;
 import frc.robot.subsystems.ArmStuff.Climber;
+import frc.robot.subsystems.ArmStuff.Elevator;
 import frc.robot.subsystems.ArmStuff.Shooter;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
@@ -60,9 +61,9 @@ public class RobotContainer {
 	private final int rotationAxis = XboxController.Axis.kRightX.value;
 
     /* Upper Controls */
-    private final int movePickUpArm = XboxController.Axis.kRightX.value;
+    private final int wristMove = XboxController.Axis.kRightY.value;
     //private final int pickUp = XboxController.Axis.kLeftY.value;
-    private final int shooterAim = XboxController.Axis.kLeftX.value;
+    private final int elevatorMove = XboxController.Axis.kLeftY.value;
     private final int climbUp = XboxController.Axis.kRightTrigger.value;
     private final int climbDown = XboxController.Axis.kLeftTrigger.value;
     //private final int climbUp = XboxController.Axis.kRightY.value;
@@ -70,16 +71,16 @@ public class RobotContainer {
 
     /* Upper Buttons */
     //private final JoystickButton shooterSpeedOne = new JoystickButton(upper, XboxController.Button.kA.value);
-    private final JoystickButton retractActuator = new JoystickButton(upper, XboxController.Button.kB.value);
+    //private final JoystickButton retractActuator = new JoystickButton(upper, XboxController.Button.kB.value);
     private final JoystickButton fastMode2 = new JoystickButton(upper, XboxController.Button.kX.value);
-    private final JoystickButton extendActuator = new JoystickButton(upper, XboxController.Button.kY.value);
     private final JoystickButton shooterBackward = new JoystickButton(upper, XboxController.Button.kLeftBumper.value);
     private final JoystickButton shooterForward = new JoystickButton(upper, XboxController.Button.kRightBumper.value);
     //private final JoystickButton climbUp = new JoystickButton(driver, XboxController.Button.kY.value);
 
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kX.value);
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton extendActuator = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton retractActuator = new JoystickButton(driver, XboxController.Button.kB.value);
     private final JoystickButton dampen = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton DriveToApril = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton setIntegratedToZero = new JoystickButton(driver, XboxController.Button.kY.value);
@@ -92,6 +93,7 @@ public class RobotContainer {
     private final Swerve s_Swerve = new Swerve();
     private final Shooter shooter = new Shooter();
     private final Actuator2 actuator2 = new Actuator2();
+    private final Elevator elevator = new Elevator();
     private final Actuator actuator = new Actuator();
     private final Climber climb = new Climber();
     private final PoseEstimator s_PoseEstimator = new PoseEstimator();
@@ -117,7 +119,16 @@ public class RobotContainer {
 		() -> setIntegratedToZero.getAsBoolean()
             )
         );
-
+         
+        elevator.setDefaultCommand(
+            new ElevatorRun(
+                elevator,
+                () -> upper.getRawAxis(elevatorMove),
+                () -> upper.getRawAxis(wristMove)
+            
+            )
+        );
+        
         // Register Named Commands
   //      NamedCommands.registerCommand("autoBalance", swerve.autoBalanceCommand());
         SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -131,7 +142,7 @@ public class RobotContainer {
                 () -> retractActuator.getAsBoolean()
             )
         );
-
+    /*
         shooter.setDefaultCommand(
             new CoralShoot(
                 shooter,
@@ -160,6 +171,7 @@ public class RobotContainer {
             )
         );
          */
+        
         climb.setDefaultCommand(
             new Climb(
                 climb,
@@ -167,6 +179,7 @@ public class RobotContainer {
                 () -> driver.getRawAxis(climbDown)
             )
         );
+    
         /*
         s_Swerve.setDefaultCommand(
             new ZeroWheels(

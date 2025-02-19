@@ -1,4 +1,4 @@
-package frc.robot.commands;
+/*package frc.robot.commands;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -45,3 +45,4 @@ public class CoralShoot extends Command {
 		
 	}    
 }
+*/

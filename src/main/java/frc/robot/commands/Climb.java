@@ -20,17 +20,32 @@ public class Climb extends Command {
 
     @Override
     public void execute(){
-
-        if (up.getAsDouble() > 0.075){
+        
+        if (up.getAsDouble() >= 0.075){
             climb.climbUp(up.getAsDouble());
         }
-        else if (down.getAsDouble() > 0.075){
-            climb.climbDown(up.getAsDouble()*-1);
+        else if (down.getAsDouble() >= 0.075){
+            climb.climbUp(down.getAsDouble()*-1);
+        }
+        else {
+            climb.climbUp(0);
+        }
+    
+        
+        
+        
+        
+        /* 
+        if (up.getAsDouble() > 0.075 && up.getAsDouble() <= 0.7500){
+            climb.climbUp((up.getAsDouble()));
+        }
+        else if (up.getAsDouble() > 0.75 ){
+            climb.climbUp((up.getAsDouble()*-1));
         }
         else{
             climb.climbUp(0);
         }
-
+        */
     }
 
     

@@ -190,17 +190,17 @@ public class Swerve extends SubsystemBase {
             mSwerveMods[2].getPosition(), // Back left
             mSwerveMods[3].getPosition()
         });
-        boolean doRejectUpdate = false;
+        boolean doRejectUpdate = true;
         LimelightHelpers.SetRobotOrientation("limelight", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
         if(Math.abs(gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
         {
             doRejectUpdate = true;
         }
-        if(mt2.tagCount == 0)
+         if(mt2.tagCount == 0)
         {
             doRejectUpdate = true;
-        }
+        } 
         if(!doRejectUpdate)
         {
             m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
