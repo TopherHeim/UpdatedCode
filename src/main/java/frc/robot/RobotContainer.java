@@ -72,15 +72,16 @@ public class RobotContainer {
     /* Upper Buttons */
     //private final JoystickButton shooterSpeedOne = new JoystickButton(upper, XboxController.Button.kA.value);
     //private final JoystickButton retractActuator = new JoystickButton(upper, XboxController.Button.kB.value);
-    private final JoystickButton fastMode2 = new JoystickButton(upper, XboxController.Button.kX.value);
+    private final JoystickButton elevatorSetPoint1 = new JoystickButton(upper, XboxController.Button.kB.value);
     private final JoystickButton shooterBackward = new JoystickButton(upper, XboxController.Button.kLeftBumper.value);
     private final JoystickButton shooterForward = new JoystickButton(upper, XboxController.Button.kRightBumper.value);
-    //private final JoystickButton climbUp = new JoystickButton(driver, XboxController.Button.kY.value);
+    private final JoystickButton wristSetPoint1 = new JoystickButton(upper, XboxController.Button.kY.value);
+    private final JoystickButton wristSetPoint2 = new JoystickButton(upper, XboxController.Button.kX.value);
 
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kX.value);
-    private final JoystickButton extendActuator = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton retractActuator = new JoystickButton(driver, XboxController.Button.kB.value);
+    private final JoystickButton extendActuator = new JoystickButton(driver, XboxController.Button.kB.value);
+    private final JoystickButton retractActuator = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton dampen = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton DriveToApril = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton setIntegratedToZero = new JoystickButton(driver, XboxController.Button.kY.value);
@@ -124,7 +125,10 @@ public class RobotContainer {
             new ElevatorRun(
                 elevator,
                 () -> upper.getRawAxis(elevatorMove),
-                () -> upper.getRawAxis(wristMove)
+                () -> upper.getRawAxis(wristMove),
+                () -> wristSetPoint1.getAsBoolean(),
+                () -> elevatorSetPoint1.getAsBoolean(),
+                () -> wristSetPoint2.getAsBoolean()
             
             )
         );
@@ -142,7 +146,7 @@ public class RobotContainer {
                 () -> retractActuator.getAsBoolean()
             )
         );
-    /*
+    
         shooter.setDefaultCommand(
             new CoralShoot(
                 shooter,

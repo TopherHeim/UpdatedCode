@@ -12,7 +12,8 @@ public class Actuator2 extends SubsystemBase implements ArmConstants {
     }
 
     public void moveActuator2(double s){
-        actuator.setPosition(s);
+        actuator.setSpeed(s);
+        
     }
 
     public double actuatorPos(){

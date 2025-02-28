@@ -17,7 +17,7 @@ import javax.sound.midi.MidiDevice;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -27,7 +27,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkFlex;
+//import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkClosedLoopController;
 
@@ -128,7 +128,7 @@ public class SwerveMod implements SwerveModule
             .idleMode(SwerveConfig.angleIdleMode)
             .smartCurrentLimit(SwerveConfig.angleContinuousCurrentLimit);
         motorConfig.closedLoop
-            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+            //.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
             .pid(SwerveConfig.angleKP, SwerveConfig.angleKI, SwerveConfig.angleKD)
             .velocityFF(SwerveConfig.angleKF)
             .outputRange(-SwerveConfig.anglePower, SwerveConfig.anglePower);
@@ -146,7 +146,7 @@ public class SwerveMod implements SwerveModule
             .idleMode(SwerveConfig.driveIdleMode)
             .smartCurrentLimit(SwerveConfig.driveContinuousCurrentLimit);
         configDrive.closedLoop
-            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+            //.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
             .velocityFF(SwerveConfig.driveKF)
             .pid(SwerveConfig.driveKP, SwerveConfig.driveKI, SwerveConfig.driveKD)
             .outputRange(-SwerveConfig.drivePower, SwerveConfig.drivePower);

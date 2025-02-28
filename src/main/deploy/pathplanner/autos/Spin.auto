@@ -9,11 +9,59 @@
           "data": {
             "pathName": "Spin"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of Spin"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Spin"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of Spin"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Spin"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of Spin"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Spin"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of Spin"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Spin"
+          }
         }
       ]
     }
   },
-  "resetOdom": false,
+  "resetOdom": true,
   "folder": null,
   "choreoAuto": false
 }

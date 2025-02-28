@@ -1,4 +1,4 @@
-/*package frc.robot.commands;
+package frc.robot.commands;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -25,10 +25,10 @@ public class CoralShoot extends Command {
     public void execute(){
         
         if (shooter1.getAsBoolean() == true){
-            shooter.setSpeed(0.5);
+            shooter.setSpeed(0.15);
         }
         else if (shooter2.getAsBoolean() == true){
-            shooter.setSpeed(-0.5);
+            shooter.setSpeed(-0.15);
         }
         else {
             shooter.setSpeed(0);
@@ -45,4 +45,3 @@ public class CoralShoot extends Command {
 		
 	}    
 }
-*/

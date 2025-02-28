@@ -21,12 +21,17 @@ public class Elevator extends SubsystemBase implements ArmConstants {
     public SparkClosedLoopController wristPID;
     public SparkMaxConfig elevatorConfig;
     public SparkMaxConfig wristConfig;
+    public RelativeEncoder eleEnc;
+    public RelativeEncoder wristEnc;
 
 
     public Elevator(){
         
         elevator = new SparkMax(elevatorId, MotorType.kBrushless);
         wrist = new SparkMax(wristId, MotorType.kBrushless);
+
+        eleEnc = elevator.getEncoder();
+        wristEnc = wrist.getEncoder();
 
         elevatorConfig = new SparkMaxConfig();
         wristConfig = new SparkMaxConfig();
@@ -60,8 +65,24 @@ public class Elevator extends SubsystemBase implements ArmConstants {
 
     public void moveWrist(double s){
 
-        wrist.set(s/4);
+        wrist.set(s/5);
         //wristPID.setReference(s *(5600), ControlType.kVelocity);
+    }
+
+    public void wristSetPoints(double s){
+        wristPID.setReference(s, ControlType.kPosition);
+    }
+
+    public void elevatorSetPoints(double s){
+        elevatorPID.setReference(s, ControlType.kPosition);
+    }
+
+    public double elevatorPos(){
+        return eleEnc.getPosition();
+    }
+
+    public double wristPos(){
+        return wristEnc.getPosition();
     }
 
 
