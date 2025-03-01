@@ -46,6 +46,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Relay.Value;
+import frc.robot.subsystems.ArmStuff.Elevator;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -121,7 +122,7 @@ public class Swerve extends SubsystemBase {
     }
 
         AutoBuilder.configure(
-            this::getAprilOdom, // Robot pose supplier
+            this::getPosition, // Robot pose supplier
             this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
             this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             (speeds, forwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds

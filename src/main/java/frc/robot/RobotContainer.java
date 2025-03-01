@@ -94,7 +94,7 @@ public class RobotContainer {
     private final Swerve s_Swerve = new Swerve();
     private final Shooter shooter = new Shooter();
     private final Actuator2 actuator2 = new Actuator2();
-    private final Elevator elevator = new Elevator();
+    public final Elevator elevator = new Elevator();
     private final Actuator actuator = new Actuator();
     private final Climber climb = new Climber();
     private final PoseEstimator s_PoseEstimator = new PoseEstimator();
@@ -134,7 +134,7 @@ public class RobotContainer {
         );
         
         // Register Named Commands
-  //      NamedCommands.registerCommand("autoBalance", swerve.autoBalanceCommand());
+        registerNamedCommands();
         SmartDashboard.putData("Auto Chooser", autoChooser);
         
         // Comment these out when testing drive// 
@@ -203,7 +203,9 @@ public class RobotContainer {
     }
 
 
-
+    public void registerNamedCommands(){
+        NamedCommands.registerCommand("HELP", new autonCommand1(elevator));
+    }
 
     /**
      * Use this method to define your button->command mappings. Buttons can be created by
