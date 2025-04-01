@@ -6,11 +6,16 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.*;
+import frc.robot.commands.AutonCommands.ElevatorHeight;
+import frc.robot.commands.AutonCommands.Shoot;
+import frc.robot.commands.AutonCommands.WaitForObjectToBeGrabbed;
+import frc.robot.commands.AutonCommands.WristHeight;
 import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.ArmStuff.Actuator;
@@ -98,21 +103,22 @@ public class RobotContainer {
     private final Actuator actuator = new Actuator();
     private final Climber climb = new Climber();
     private final PoseEstimator s_PoseEstimator = new PoseEstimator();
+
     //private PathPlannerTrajectory trajectory;
     //private final Command auton = new AutonRun(s_Swerve);
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-
-        autoChooser = AutoBuilder.buildAutoChooser();
-
+        // Register Named Commands
+        registerNamedCommands();
+        
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(translationAxis), 
-                () -> -driver.getRawAxis(strafeAxis), 
-                () -> -driver.getRawAxis(rotationAxis), 
+                () -> -Math.pow(driver.getRawAxis(translationAxis),3), 
+                () -> -Math.pow(driver.getRawAxis(strafeAxis),3), 
+                () -> -Math.pow(driver.getRawAxis(rotationAxis),3), 
                 () -> false,
                 () -> dampen.getAsBoolean(),
                 () -> 1, //speed multiplier 
@@ -120,7 +126,7 @@ public class RobotContainer {
 		() -> setIntegratedToZero.getAsBoolean()
             )
         );
-         
+        
         elevator.setDefaultCommand(
             new ElevatorRun(
                 elevator,
@@ -131,12 +137,11 @@ public class RobotContainer {
                 () -> wristSetPoint2.getAsBoolean()
             
             )
-        );
+        ); 
         
-        // Register Named Commands
-        registerNamedCommands();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+
         
+
         // Comment these out when testing drive// 
         
         actuator2.setDefaultCommand(
@@ -193,19 +198,36 @@ public class RobotContainer {
         );
         */
         
-        
-    
-
-
-
         // Configure the button bindings
         configureButtonBindings();
+
+        autoChooser = AutoBuilder.buildAutoChooser();
+
+        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
 
     public void registerNamedCommands(){
-        NamedCommands.registerCommand("HELP", new autonCommand1(elevator));
+        
+        /////////////////////////////////////Elevator Commands///////////////////////////////////////
+        NamedCommands.registerCommand("ElevatorLevel3", new ElevatorHeight(elevator, -220));
+        NamedCommands.registerCommand("ElevatorLevel2", new ElevatorHeight(elevator, -168));
+        NamedCommands.registerCommand("ElevatorLevel1", new ElevatorHeight(elevator, -95));
+        NamedCommands.registerCommand("Algae", new ElevatorHeight(elevator, -190));
+        NamedCommands.registerCommand("ElevatorPlayerStation", new ElevatorHeight(elevator, -110));
+
+        /////////////////////////////////////Wrist Commands///////////////////////////////////////
+        NamedCommands.registerCommand("WristLevel1", new WristHeight(elevator, -15));
+        NamedCommands.registerCommand("WristLevel2", new WristHeight(elevator, -18.1));
+        NamedCommands.registerCommand("WristLevel3", new WristHeight(elevator, -15.5));
+        NamedCommands.registerCommand("WristPlayerStation", new WristHeight(elevator, -8));
+
+        /////////////////////////////////////Shooter Commands///////////////////////////////////////
+        NamedCommands.registerCommand("WaitForCoral", new WaitForObjectToBeGrabbed(shooter, 30));
+        NamedCommands.registerCommand("Shoot", new Shoot(shooter));
+        NamedCommands.registerCommand("autonCommand", new autonCommand1(elevator));
     }
+
 
     /**
      * Use this method to define your button->command mappings. Buttons can be created by

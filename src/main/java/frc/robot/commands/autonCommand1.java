@@ -20,5 +20,22 @@ public class autonCommand1 extends Command {
         elevator.elevatorSetPoints(50);
         System.out.println("IS THIS WORKING");
     }
+
+    @Override
+    public void initialize() {
+        System.out.println("Initialized command");
+    }
+
+    @Override
+    public boolean isFinished() {
+        // TODO Auto-generated method stub
+        return true;
+    }
+
+    @Override
+    public boolean isScheduled() {
+        // TODO Auto-generated method stub
+        return super.isScheduled();
+    }
     
 }

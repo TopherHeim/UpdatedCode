@@ -16,11 +16,11 @@ public interface ArmConstants {
     public final double aI = 0;
     public final double aD = 0;
 
-    public final double wP = 0.01;
-    public final double wI = 0;
+    public final double wP = 0.07;
+    public final double wI = 0.0;
     public final double wD = 0;
 
-    public final double eP = 0.01;
+    public final double eP = 0.15;
     public final double eI = 0;
     public final double eD = 0;
 

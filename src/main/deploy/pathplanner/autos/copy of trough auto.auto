@@ -5,57 +5,63 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Spin"
+            "name": "WristLevel1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ElevatorLevel1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Copy of Spin"
+            "pathName": "Trough Path pt.1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WristPlayerStation"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Spin"
+            "pathName": "Trough Path pt.2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WaitForCoral"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Copy of Spin"
+            "pathName": "Trough Path pt.3"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Spin"
+            "name": "WristLevel1"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Copy of Spin"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Spin"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Copy of Spin"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Spin"
+            "name": "Shoot"
           }
         }
       ]

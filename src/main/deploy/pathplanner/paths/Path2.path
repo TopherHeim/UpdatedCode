@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.146299342105263,
-        "y": 4.2078125
+        "x": 5.754098360655737,
+        "y": 3.0180327868852457
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9186155282643602,
-        "y": 4.02956402499363
+        "x": 5.344098360655737,
+        "y": 2.452782786885245
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.8088815789473682,
-        "y": 4.044243421052631
+        "x": 3.6270000000000007,
+        "y": 1.83125
       },
       "prevControl": {
-        "x": 2.3385208265094897,
-        "y": 4.194270552267207
+        "x": 4.0365,
+        "y": 1.8117499999999995
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,22 +33,22 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 1.5,
-    "maxAngularVelocity": 400.0,
-    "maxAngularAcceleration": 620.0,
+    "maxVelocity": 1.0,
+    "maxAcceleration": 1.0,
+    "maxAngularVelocity": 200.0,
+    "maxAngularAcceleration": 220.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -176.76029970389783
+    "velocity": 2.0,
+    "rotation": -132.27368900609372
   },
   "reversed": false,
-  "folder": "BlueWall auton",
+  "folder": "Auton",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 143.80679269443525
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

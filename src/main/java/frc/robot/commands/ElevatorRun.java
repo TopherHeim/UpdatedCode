@@ -16,6 +16,8 @@ public class ElevatorRun extends Command{
     private BooleanSupplier wSetPoint1;
     private BooleanSupplier wSetPoint2;
     private BooleanSupplier eSetPoint1;
+    private double maxCurrentThreshold = 18;
+    private double minCurrentThreshold = 1;
 
     public ElevatorRun(Elevator elevator, DoubleSupplier elevatorRun, DoubleSupplier wristMove, BooleanSupplier wSetPoint1, BooleanSupplier eSetPoint1, BooleanSupplier wSetPoint2){
         this.elevator = elevator;
@@ -33,17 +35,18 @@ public class ElevatorRun extends Command{
         
         SmartDashboard.putNumber("elevator enc", elevator.elevatorPos());
         SmartDashboard.putNumber("wrist enc", elevator.wristPos());
+        SmartDashboard.putNumber("elevator current", elevator.getElevatorCurrent());
 
 
         if (elevatorRun.getAsDouble() >= 0.075){
-            elevator.moveElevator(elevatorRun.getAsDouble());
+            elevator.moveElevator((elevatorRun.getAsDouble()*-1));
             SmartDashboard.putNumber("value", elevatorRun.getAsDouble());
         }
         else if (elevatorRun.getAsDouble() <= -0.075){
-            elevator.moveElevator(elevatorRun.getAsDouble());
+            elevator.moveElevator((elevatorRun.getAsDouble()*-1));
         }
         else {
-            elevator.moveElevator(0.01);
+            elevator.moveElevator(-0.01);
         }
 
 
@@ -75,5 +78,12 @@ public class ElevatorRun extends Command{
         if(eSetPoint1.getAsBoolean() == true){
             elevator.elevatorSetPoints(180);
         }
+
+        
     }
+    /* 
+    public Command autonCommand2(){
+        return runOnce(() -> elevator.elevatorSetPoints(50));
+    }
+        */
 }

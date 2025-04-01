@@ -88,6 +88,10 @@ public class Elevator extends SubsystemBase implements ArmConstants {
         return wristEnc.getPosition();
     }
 
+    public double getElevatorCurrent() {
+        return elevator.getOutputCurrent();
+    }
+
 
 
 }

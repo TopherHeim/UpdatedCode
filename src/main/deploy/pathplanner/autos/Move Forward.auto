@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "score"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "HELP"
+            "pathName": "move forward"
           }
         }
       ]

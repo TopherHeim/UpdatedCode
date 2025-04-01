@@ -11,11 +11,11 @@ class AprilTag {
     double zRotation, yRotation;
     
     public AprilTag(double x, double y, double z, double zRotation, double yRotation) {
-        this.x = x / 39.37; // Convert inches to meters
-        this.y = y / 39.37;
-        this.z = z / 39.37;
         this.zRotation = zRotation - 180;
         this.yRotation = yRotation;
+        this.x = ((x + (22 * Math.cos(zRotation*(3.141592653589793238462/180))))/ 39.37); // Convert inches to meters
+        this.y = ((y + (22 * Math.sin(zRotation*(3.141592653589793238462/180))))/ 39.37);
+        this.z = z / 39.37;
     }
 
     @Override
@@ -40,13 +40,13 @@ public class AprilTagCoordinates {
         tagMap.put(9, new AprilTag(497.77, 186.83, 12.13, 120, 0));
         tagMap.put(10, new AprilTag(481.39, 158.50, 12.13, 180, 0));
         tagMap.put(11, new AprilTag(497.77, 130.17, 12.13, 240, 0));
-        tagMap.put(12, new AprilTag(481.39, 158.50, 12.13, 54, 0));
-        tagMap.put(13, new AprilTag(33.51, 291.20, 58.50, 90, 0));
-        tagMap.put(14, new AprilTag(325.68, 241.64, 73.54, 0, 30));
-        tagMap.put(15, new AprilTag(325.68, 75.39, 73.54, 0, 30));
+        tagMap.put(12, new AprilTag(33.51, 25.51, 58.5, 54, 0));
+        tagMap.put(13, new AprilTag(33.51, 291.20, 58.50, 306, 0));
+        tagMap.put(14, new AprilTag(325.68, 241.64, 73.54, 180, 0));
+        tagMap.put(15, new AprilTag(325.68, 241.64, 73.54, 180, 0));
         tagMap.put(16, new AprilTag(235.73, -0.15, 51.25, 90, 0));
         tagMap.put(17, new AprilTag(160.39, 130.17, 12.13, 240, 0));
-        tagMap.put(18, new AprilTag(144.00, 158.50, 12.13, 0, 0));
+        tagMap.put(18, new AprilTag(144.00, 158.50, 12.13, 180, 0));
         tagMap.put(19, new AprilTag(160.39, 186.83, 12.13, 120, 0));
         tagMap.put(20, new AprilTag(193.10, 186.83, 12.13, 60, 0));
         tagMap.put(21, new AprilTag(209.49, 158.50, 12.13, 0, 0));

@@ -27,6 +27,10 @@ public class Shooter extends SubsystemBase implements ArmConstants  {
     }
     */
 
+    public double getIntakeCurrent() {
+        return coralShooter1.getOutputCurrent();
+    }
+
 
     
 }

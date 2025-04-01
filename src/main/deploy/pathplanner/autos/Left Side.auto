@@ -5,15 +5,27 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "score"
+            "name": "WristLevel1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "HELP"
+            "name": "ElevatorLevel1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of Trough Path pt.1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         }
       ]

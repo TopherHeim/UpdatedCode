@@ -61,7 +61,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Utility;
-import frc.robot.subsystems.ArmStuff.Actuator2;;
+import frc.robot.subsystems.ArmStuff.Actuator2;
+
 
 
 
@@ -87,6 +88,16 @@ public class Swerve extends SubsystemBase {
 }
 
     public Swerve() {
+
+        LimelightHelpers.setCameraPose_RobotSpace("", 
+        0.47465,    // Forward offset (meters)
+        -0.15,    // Side offset (meters)
+        0.23495,    // Height offset (meters)
+    0.0,    // Roll (degrees)
+    6.64,   // Pitch (degrees)
+    0.0     // Yaw (degrees)
+        );
+
         SmartDashboard.putData("Field", field2d);
         gyro = new AHRS(NavXComType.kMXP_SPI); // (May need to change this: NavXUpdateRate.k200Hz) 
         //gyro.configFactoryDefault();
@@ -122,13 +133,13 @@ public class Swerve extends SubsystemBase {
     }
 
         AutoBuilder.configure(
-            this::getPosition, // Robot pose supplier
+            this::getAprilOdom, // Robot pose supplier
             this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
             this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             (speeds, forwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                new PIDConstants(1.7, 0, 0.0), // Translation PID constants
-                new PIDConstants(2.2, 0.0, 0.0) // Rotation PID constants
+                new PIDConstants(1.85, 0.0, 0.0), // Translation PID constants
+                new PIDConstants(3.3, 0.0, 0.0) // Rotation PID constants
               ),
             config, // The robot configuration
             () -> {
@@ -158,7 +169,7 @@ public class Swerve extends SubsystemBase {
                 mSwerveMods[3].getPosition() //Back right
             },
           new Pose2d(),
-          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(5)),
           VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
     }
@@ -181,7 +192,7 @@ public class Swerve extends SubsystemBase {
         // PathPlanner will provide the ChassisSpeeds for autonomous driving
         return new ChassisSpeeds(0, 0, 0); // This will be updated automatically in autonomous, no joystick input needed
     }
-
+    
     public void updateOdometry(){
         m_poseEstimator.update(
         gyro.getRotation2d(),
@@ -205,7 +216,7 @@ public class Swerve extends SubsystemBase {
 
         if(!doRejectUpdate)
         {
-            m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+            m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,999999999));
             m_poseEstimator.addVisionMeasurement(
                 mt2.pose,
                 mt2.timestampSeconds);
@@ -266,7 +277,7 @@ public class Swerve extends SubsystemBase {
 
     public void resetOdometry(Pose2d pose) {
         
-        swerveOdometry.resetPosition(
+        m_poseEstimator.resetPosition(
             gyro.getRotation2d(),
             getModulePositions(),
             pose
