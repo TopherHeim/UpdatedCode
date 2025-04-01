@@ -92,18 +92,30 @@ These instructions are mostly followable from Step
 
 ## **Controls**
 
-### **Driver Controls** (Using Xbox Controller):
-- **Left Stick**: Move the robot (Translation).
-- **Right Stick**: Rotate the robot.
-- **B Button**: Reset swerve wheels.
-- **Left Bumper**: Toggle robot-centric driving.
-- **Right Bumper**: Toggle robot speed/dampening.
+### **Driver Controls (Joystick 0)** (Using Xbox Controller):
+- **Left Stick (Y-Axis)**: Move the robot forward/backward (Translation).
+- **Left Stick (X-Axis)**: Move the robot left/right (Strafe).
+- **Right Stick (X-Axis)**: Rotate the robot.
+- **X Button**: Reset the gyro.
+- **B Button**: Extend actuator.
+- **Left Bumper**: Retract actuator.
+- **Right Bumper**: Dampen robot speed.
+- **A Button**: Drive to April tag (Auto Mode).
+- **Left Trigger**: Control climb (down).
+- **Right Trigger**: Control climb (retract).
+- **POV Up (90°)**: Lock robot heading to 90°.
+- **POV Down (270°)**: Lock robot heading to 270°.
+- **POV Left (180°)**: Lock robot heading to 180°.
+- **POV Right (0°)**: Lock robot heading to 0°.
 
-### **Upper Controls** (Using Xbox Controller):
-- **A Button**: Activate the shooter.
-- **Y Button**: Toggle pickup arm.
-- **Left Trigger**: Control arm actuators (climb or shoot).
-- **Right Trigger**: Control shooter speed.
+### **Upper Controls (Joystick 1)** (Using Xbox Controller):
+- **Right Stick (Y-Axis)**: Move the wrist of the robot.
+- **Left Stick (Y-Axis)**: Move the elevator up/down.
+- **B Button**: Elevator SetPoint1.
+- **Y Button**: Set wrist to preset position (WristSetPoint1).
+- **X Button**: Set wrist to another preset position (WristSetPoint2).
+- **Left Bumper**: Shooter reverse (shooter backward).
+- **Right Bumper**: Shooter forward (shooter forward).
 
 ---
 
