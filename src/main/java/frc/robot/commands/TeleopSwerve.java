@@ -28,18 +28,18 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-
-
 public class TeleopSwerve extends Command { 
   private final boolean m_leftSide = true; // Left or right side of the coral to go to
   private Command m_path;
 
+  // Function to get the AprilTag ID detected by the Limelight
   public static int getAprilTagID() {
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     NetworkTableEntry tidEntry = table.getEntry("tid"); // 'tid' holds the detected AprilTag ID
     return (int) tidEntry.getDouble(-1); // Return the ID, or -1 if no tag is found
-}
-  // Checking for the AprilTag ID corresponding to the current team color
+  }
+
+  // Function to check if the AprilTag is in view and matches the current team color
   public static boolean coralTagInView() {
     return (Utility.aprilTagInView() &&
       (
@@ -57,9 +57,8 @@ public class TeleopSwerve extends Command {
     
     // Calculate the AprilTag's position on the field
     Translation2d tagFieldPos = new Translation2d(
-      // X = (tagX * cos(robotRot)) + (tagY * cos(robotRot - pi/2))
-      (aprilTagPos.getX() * Math.cos(robotRot))  +  (aprilTagPos.getY() * Math.cos(robotRot - (Math.PI / 2))),
-      (aprilTagPos.getX() * Math.sin(robotRot))  +  (aprilTagPos.getY() * Math.sin(robotRot - (Math.PI / 2)))
+      (aprilTagPos.getX() * Math.cos(robotRot)) + (aprilTagPos.getY() * Math.cos(robotRot - (Math.PI / 2))),
+      (aprilTagPos.getX() * Math.sin(robotRot)) + (aprilTagPos.getY() * Math.sin(robotRot - (Math.PI / 2)))
     );
 
     double offsetHoriz = Constants.AprilTags.coralOffset.getX();
@@ -71,117 +70,110 @@ public class TeleopSwerve extends Command {
 
     // Add offsets to find the position of the robot on the field next to the AprilTag
     Translation2d finalGoalPos = new Translation2d(
-      // X = tagFieldX + (offsetX * Math.cos(faceAngle - PI/2)) + (offsetY * Math.cos(faceAngle - PI/2))
-      tagFieldPos.getX()  +  (offsetHoriz * Math.cos(faceTagAngle - (Math.PI / 2)))  +  (offsetOut * Math.cos(faceTagAngle - Math.PI)),
-      tagFieldPos.getY()  +  (offsetHoriz * Math.sin(faceTagAngle - (Math.PI / 2)))  +  (offsetOut * Math.sin(faceTagAngle - Math.PI))
+      tagFieldPos.getX() + (offsetHoriz * Math.cos(faceTagAngle - (Math.PI / 2))) + (offsetOut * Math.cos(faceTagAngle - Math.PI)),
+      tagFieldPos.getY() + (offsetHoriz * Math.sin(faceTagAngle - (Math.PI / 2))) + (offsetOut * Math.sin(faceTagAngle - Math.PI))
     );
 
     return new Pose2d(finalGoalPos, Rotation2d.fromRadians(faceTagAngle));
   }   
-    private Swerve s_Swerve;    
-    private DoubleSupplier translationSup;
-    private DoubleSupplier strafeSup;
-    private DoubleSupplier rotationSup;
-    private BooleanSupplier robotCentricSup;
-    private BooleanSupplier dampen;
-    private DoubleSupplier speedDial;
-    private BooleanSupplier zero;
-    private BooleanSupplier integratedZero;
 
-    private PIDController rotationController;
+  // Declare variables for Swerve drive and control inputs
+  private Swerve s_Swerve;    
+  private DoubleSupplier translationSup;
+  private DoubleSupplier strafeSup;
+  private DoubleSupplier rotationSup;
+  private BooleanSupplier robotCentricSup;
+  private BooleanSupplier dampen;
+  private DoubleSupplier speedDial;
+  private BooleanSupplier zero;
+  private BooleanSupplier integratedZero;
 
-    public TeleopSwerve(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier dampen, DoubleSupplier speedDial, BooleanSupplier zero, BooleanSupplier integratedZero) {
-        this.s_Swerve = s_Swerve;
-        this.zero = zero;
-        addRequirements(s_Swerve);
+  // Declare PID controller for rotation
+  private PIDController rotationController;
 
-        rotationController = new PIDController(0.01, 0, 0 );
-        rotationController.enableContinuousInput(-Math.PI, Math.PI);
-        rotationController.setTolerance(3);
+  // Constructor to initialize the TeleopSwerve command
+  public TeleopSwerve(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier dampen, DoubleSupplier speedDial, BooleanSupplier zero, BooleanSupplier integratedZero) {
+    this.s_Swerve = s_Swerve;
+    this.zero = zero;
+    addRequirements(s_Swerve); // Add the swerve subsystem to the command requirements
 
-        this.translationSup = translationSup;
-        this.strafeSup = strafeSup;
-        this.rotationSup = rotationSup;
-        this.robotCentricSup = robotCentricSup;
-        this.dampen = dampen;
-        this.speedDial = speedDial;
-    }
-//This boi Complex
-    @Override
-    public void execute() {
-        if(zero.getAsBoolean() == true){
-    LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-          if (!(mt2.tagCount == 0)) {
-            int TagId = getAprilTagID();
-  
-              Pose2d currentRobotPose = s_Swerve.getAprilOdom();  
-              // Calculate goal pose
-              Pose2d goalPos = AprilTagCoordinates.getPose2d(TagId);
-              // Create path from current robot position to the new position
-              List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(currentRobotPose, goalPos);
-              PathPlannerPath path = new PathPlannerPath(
-                  waypoints,
-                  Constants.AprilTags.constraints,
-                  null,
-                  new GoalEndState(0, goalPos.getRotation())
-              );
-  
-              path.preventFlipping = true;
-              m_path = AutoBuilder.followPath(path);
-              
-              // Initialize the path command
-              if (m_path != null) {
-                  m_path.schedule();
-                  System.out.println("Path initialized!");
-              }
-      } 
+    // Initialize PID controller for rotation
+    rotationController = new PIDController(0.01, 0, 0 );
+    rotationController.enableContinuousInput(-Math.PI, Math.PI);
+    rotationController.setTolerance(3);
+
+    this.translationSup = translationSup;
+    this.strafeSup = strafeSup;
+    this.rotationSup = rotationSup;
+    this.robotCentricSup = robotCentricSup;
+    this.dampen = dampen;
+    this.speedDial = speedDial;
   }
-        /* Get Values, Deadband*/
-        double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband) * (dampen.getAsBoolean() ? 0.2 : 1) * ((speedDial.getAsDouble() + 1) / 2);
-        double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband) * (dampen.getAsBoolean() ? 0.2 : 1) * ((speedDial.getAsDouble() + 1) / 2);
-        double  rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband) * (dampen.getAsBoolean() ? 0.2 : 1) * ((speedDial.getAsDouble() + 1) / 2);
 
-        //heading direction state
-        switch(States.driveState){
-            case d0:
+  // This method is called periodically while the command is scheduled
+  @Override
+  public void execute() {
+    // Check if the robot should zero its position
+    if(zero.getAsBoolean() == true){
+      // Get the robot's current position from the Limelight
+      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+      if (!(mt2.tagCount == 0)) {
+        int TagId = getAprilTagID();
 
-                //heading lock
-               rotationVal = rotationController.calculate(s_Swerve.getYaw().getRadians(), Units.degreesToRadians(0));
-                break;
-            case d90:
-
-                //heading lock
-                rotationVal = rotationController.calculate(s_Swerve.getYaw().getRadians(), Units.degreesToRadians(90));
-                break;
-            case d180:
-
-                //heading lock
-                rotationVal = rotationController.calculate(s_Swerve.getYaw().getRadians(), Units.degreesToRadians(180));
-                break;
-            case d270:
-
-                //heading lock
-                rotationVal = rotationController.calculate(s_Swerve.getYaw().getRadians(), Units.degreesToRadians(270));
-                break;
-
-
-            case standard:
-            
-                //normal
-                rotationVal = rotationVal * SwerveConfig.maxAngularVelocity;
-                break;
-        }
-       
-         
-
-
-
-        /* Drive */
-        s_Swerve.drive(
-            new Translation2d(translationVal, strafeVal).times(SwerveConfig.maxSpeed), 
-            rotationVal,
-            !robotCentricSup.getAsBoolean(), 
-            true
+        // Get the robot's current pose and the goal pose based on the detected AprilTag
+        Pose2d currentRobotPose = s_Swerve.getAprilOdom();  
+        Pose2d goalPos = AprilTagCoordinates.getPose2d(TagId);
+        
+        // Create waypoints for the path from current position to goal position
+        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(currentRobotPose, goalPos);
+        PathPlannerPath path = new PathPlannerPath(
+            waypoints,
+            Constants.AprilTags.constraints,
+            null,
+            new GoalEndState(0, goalPos.getRotation())
         );
+
+        path.preventFlipping = true; // Prevent path flipping
+        m_path = AutoBuilder.followPath(path); // Build the path following command
+        
+        // Initialize the path command and schedule it
+        if (m_path != null) {
+            m_path.schedule();
+            System.out.println("Path initialized!");
+        }
+      }
     }
+
+    /* Get Values, Apply Deadband, and Adjust Speed */
+    double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband) * (dampen.getAsBoolean() ? 0.2 : 1) * ((speedDial.getAsDouble() + 1) / 2);
+    double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband) * (dampen.getAsBoolean() ? 0.2 : 1) * ((speedDial.getAsDouble() + 1) / 2);
+    double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband) * (dampen.getAsBoolean() ? 0.2 : 1) * ((speedDial.getAsDouble() + 1) / 2);
+
+    // Handle different drive states for heading control
+    switch(States.driveState){
+        case d0:
+            rotationVal = rotationController.calculate(s_Swerve.getYaw().getRadians(), Units.degreesToRadians(0)); // Heading lock to 0 degrees
+            break;
+        case d90:
+            rotationVal = rotationController.calculate(s_Swerve.getYaw().getRadians(), Units.degreesToRadians(90)); // Heading lock to 90 degrees
+            break;
+        case d180:
+            rotationVal = rotationController.calculate(s_Swerve.getYaw().getRadians(), Units.degreesToRadians(180)); // Heading lock to 180 degrees
+            break;
+        case d270:
+            rotationVal = rotationController.calculate(s_Swerve.getYaw().getRadians(), Units.degreesToRadians(270)); // Heading lock to 270 degrees
+            break;
+        case standard:
+            rotationVal = rotationVal * SwerveConfig.maxAngularVelocity; // Normal control for rotation
+            break;
+    }
+
+    // Drive the robot using the calculated values
+    s_Swerve.drive(
+        new Translation2d(translationVal, strafeVal).times(SwerveConfig.maxSpeed), // Apply translation speed
+        rotationVal, // Apply rotation speed
+        !robotCentricSup.getAsBoolean(), // Use field-centric control if true
+        true // Enable swerve drive field-relative mode
+    );
+  }
 }
