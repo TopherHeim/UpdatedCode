@@ -32,213 +32,226 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkClosedLoopController;
 
 
-/**
- * a Swerve Modules using REV Robotics motor controllers and CTRE CANcoder absolute encoders.
- */
+/** Swerve Module class utilizing REV Robotics motor controllers and CTRE CANcoder absolute encoders. **/
 public class SwerveMod implements SwerveModule
 {
-    public int moduleNumber;
-    private Rotation2d angleOffset;
-   // private Rotation2d lastAngle;
+    public int moduleNumber;  // Module ID for this swerve modul
+    private Rotation2d angleOffset;  // Offset for angle calibration to maintain consistent module orientation
 
+    // Motor controllers
     private SparkMax mAngleMotor;
     private SparkMax mDriveMotor;
     private SparkClosedLoopController controller;
 
-    private SparkMaxConfig motorConfig;
+    private SparkMaxConfig motorConfig;  // Motor configuration object
     private SparkClosedLoopController closedLoopController;
 
+    // Encoders for position and velocity feedback
     private CANcoder angleEncoder;
     private RelativeEncoder encoder;
     private RelativeEncoder relDriveEncoder;
 
-    //SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Constants.Swerve.driveKS, Constants.Swerve.driveKV, Constants.Swerve.driveKA);
-
+    // Constructor for initializing the Swerve module with its parameters and configuring motors/encoders
     public SwerveMod(int moduleNumber, RevSwerveModuleConstants moduleConstants)
     {
         this.moduleNumber = moduleNumber;
         this.angleOffset = moduleConstants.angleOffset;
         
-        /* Angle Motor Config */
-        mAngleMotor = new SparkMax(moduleConstants.angleMotorID, MotorType.kBrushless);
-        configAngleMotor();
-        //mAngleMotor.setInverted(true);
-        /* Drive Motor Config */
-        mDriveMotor = new SparkMax(moduleConstants.driveMotorID,  MotorType.kBrushless);
-        configDriveMotor();
+        /* Angle Motor Configuration */
+        mAngleMotor = new SparkMax(moduleConstants.angleMotorID, MotorType.kBrushless); // Initialize angle motor
+        configAngleMotor();  // Configure the angle motor settings
+        
+        /* Drive Motor Configuration */
+        mDriveMotor = new SparkMax(moduleConstants.driveMotorID, MotorType.kBrushless); // Initialize drive motor
+        configDriveMotor();  // Configure the drive motor settings
 
-         /* Angle Encoder Config */
-    
-        angleEncoder = new CANcoder(moduleConstants.cancoderID);
-        configEncoders();
-
-
-       // lastAngle = getState().angle;
+        /* Angle Encoder Configuration */
+        angleEncoder = new CANcoder(moduleConstants.cancoderID);  // Initialize absolute encoder (CTRE CANcoder)
+        configEncoders();  // Configure the encoders for both angle and drive motors
     }
 
-
+    // Configures the encoders for relative and absolute position feedback
     private void configEncoders()
     {     
-       // absolute encoder   
+        // Configuration for relative drive encoder
         SparkMaxConfig configRelDrive = new SparkMaxConfig();
+        relDriveEncoder = mDriveMotor.getEncoder();  // Initialize the drive motor encoder
+        relDriveEncoder.setPosition(0);  // Reset encoder position to zero
 
-        relDriveEncoder = mDriveMotor.getEncoder();
-        relDriveEncoder.setPosition(0);
+        encoder = mAngleMotor.getEncoder();  // Initialize the angle motor encoder
 
-        encoder = mAngleMotor.getEncoder();
-
+        // Apply CANcoder configuration (for absolute encoder)
         angleEncoder.getConfigurator().apply(new CANcoderConfiguration());
         angleEncoder.getConfigurator().apply(new SwerveConfig().canCoderConfig);
 
-        
+        // Set position and velocity conversion factors for drive encoder
         configRelDrive.encoder
-            .positionConversionFactor(SwerveConfig.driveRevToMeters)
-            .velocityConversionFactor(SwerveConfig.driveRpmToMetersPerSecond);
+            .positionConversionFactor(SwerveConfig.driveRevToMeters)  // Convert revolutions to meters
+            .velocityConversionFactor(SwerveConfig.driveRpmToMetersPerSecond);  // Convert RPM to m/s for velocity
 
+        // Set position and velocity conversion factors for angle encoder
         motorConfig.encoder
-            .positionConversionFactor(SwerveConfig.DegreesPerTurnRotation)
-            .velocityConversionFactor(SwerveConfig.DegreesPerTurnRotation / 60);
+            .positionConversionFactor(SwerveConfig.DegreesPerTurnRotation)  // Convert to degrees
+            .velocityConversionFactor(SwerveConfig.DegreesPerTurnRotation / 60);  // Convert to degrees per second (RPM)
 
-
+        // Apply configurations to the motors
         mDriveMotor.configure(configRelDrive, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         mAngleMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-        resetToAbsolute();
+
+        resetToAbsolute();  // Reset the encoder to its absolute position based on the CANcoder
     }
+
+    // Resets the module's encoders to the absolute position from the CANcoder, accounting for offsets
     public void resetToAbsolute() {
-    double absolutePosition = getCanCoder().getDegrees();  // Get CANCoder absolute position
-    double zeroedPosition = absolutePosition - angleOffset.getDegrees();  // Apply offset
-    // Adjust zeroed position to match the range of the relative encoder (-180 to +180)
-    if (zeroedPosition > 180) {
-        zeroedPosition -= 360;
-    } 
+        double absolutePosition = getCanCoder().getDegrees();  // Get absolute position from CANcoder
+        double zeroedPosition = absolutePosition - angleOffset.getDegrees();  // Apply offset for calibration
+        
+        // Adjust zeroed position if necessary to ensure it falls within valid range
+        if (zeroedPosition > 180) {
+            zeroedPosition -= 360;  // Normalize to the range (-180 to +180)
+        } 
 
-    encoder.setPosition(zeroedPosition);  // Reset motor encoder position
-
-    System.out.println("Module " + moduleNumber + ": Reset to Absolute -> CANCoder = " + absolutePosition 
+        encoder.setPosition(zeroedPosition);  // Set motor encoder to zeroed position
+        // Debugging output to confirm reset
+        System.out.println("Module " + moduleNumber + ": Reset to Absolute -> CANCoder = " + absolutePosition 
                         + ", Offset = " + angleOffset.getDegrees() 
                         + ", Zeroed Position = " + zeroedPosition + ", Actual Position  = " + encoder.getPosition());
-}
+    }
 
+   // Configures the angle motor for the swerve module
     private void configAngleMotor()
     {
+        // Obtain the closed-loop controller for the angle motor
         closedLoopController = mAngleMotor.getClosedLoopController();
+
+        // Initialize the SparkMax motor configuration object
         motorConfig = new SparkMaxConfig();
+
+        // Set the configuration for the angle motor: inversion, idle mode, and current limit
         motorConfig
-            .inverted(SwerveConfig.angleMotorInvert)
-            .idleMode(SwerveConfig.angleIdleMode)
-            .smartCurrentLimit(SwerveConfig.angleContinuousCurrentLimit);
+            .inverted(SwerveConfig.angleMotorInvert)  // Whether the motor is inverted (clockwise or counterclockwise)
+            .idleMode(SwerveConfig.angleIdleMode)  // Idle mode of the motor when not actively controlled
+            .smartCurrentLimit(SwerveConfig.angleContinuousCurrentLimit);  // Set the maximum continuous current the motor can draw
+
+        // Configure closed-loop control for the motor with PID settings and feedforward
         motorConfig.closedLoop
-            //.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-            .pid(SwerveConfig.angleKP, SwerveConfig.angleKI, SwerveConfig.angleKD)
-            .velocityFF(SwerveConfig.angleKF)
-            .outputRange(-SwerveConfig.anglePower, SwerveConfig.anglePower);
+            //.feedbackSensor(FeedbackSensor.kPrimaryEncoder)  // Uncomment to use encoder feedback
+            .pid(SwerveConfig.angleKP, SwerveConfig.angleKI, SwerveConfig.angleKD)  // PID coefficients for angle control
+            .velocityFF(SwerveConfig.angleKF)  // Feedforward term for velocity control
+            .outputRange(-SwerveConfig.anglePower, SwerveConfig.anglePower);  // Set the output range for the motor (-1 to 1)
+
+        // Apply the motor configuration to the angle motor
         mAngleMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-        
-       
     }
 
+    // Configures the drive motor for the swerve module
     private void configDriveMotor()
-    {        
+    {
+        // Initialize a new SparkMax motor configuration object for the drive motor
         SparkMaxConfig configDrive = new SparkMaxConfig();
 
+        // Set the configuration for the drive motor: inversion, idle mode, and current limit
         configDrive
-            .inverted(SwerveConfig.driveMotorInvert)
-            .idleMode(SwerveConfig.driveIdleMode)
-            .smartCurrentLimit(SwerveConfig.driveContinuousCurrentLimit);
+            .inverted(SwerveConfig.driveMotorInvert)  // Whether the drive motor is inverted
+            .idleMode(SwerveConfig.driveIdleMode)  // Idle mode of the drive motor
+            .smartCurrentLimit(SwerveConfig.driveContinuousCurrentLimit);  // Set the maximum continuous current the motor can draw
+
+        // Configure closed-loop control for the drive motor with PID settings and feedforward
         configDrive.closedLoop
-            //.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-            .velocityFF(SwerveConfig.driveKF)
-            .pid(SwerveConfig.driveKP, SwerveConfig.driveKI, SwerveConfig.driveKD)
-            .outputRange(-SwerveConfig.drivePower, SwerveConfig.drivePower);
+            //.feedbackSensor(FeedbackSensor.kPrimaryEncoder)  // Uncomment to use encoder feedback
+            .velocityFF(SwerveConfig.driveKF)  // Feedforward term for drive velocity control
+            .pid(SwerveConfig.driveKP, SwerveConfig.driveKI, SwerveConfig.driveKD)  // PID coefficients for speed control
+            .outputRange(-SwerveConfig.drivePower, SwerveConfig.drivePower);  // Set the output range for the drive motor (-1 to 1)
+
+        // Apply the motor configuration to the drive motor
         mDriveMotor.configure(configDrive, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-       
     }
 
-
-
+    // Sets the desired state for the swerve module (desired speed and angle)
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop)
     {
-        
-        
-        // CTREModuleState functions for any motor type.
-        desiredState = CTREModuleState.optimize(desiredState, getState().angle); 
-        setAngle(desiredState);
-        setSpeed(desiredState, isOpenLoop);
-        /* 
-        if(mDriveMotor.getFault(FaultID.kSensorFault))
-        {
-            DriverStation.reportWarning("Sensor Fault on Drive Motor ID:"+mDriveMotor.getDeviceId(), false);
-        }
+        // Optimize the desired state by adjusting the angle for minimal rotation needed
+        desiredState = CTREModuleState.optimize(desiredState, getState().angle);
 
-        if(mAngleMotor.getFault(FaultID.kSensorFault))
-        {
-            DriverStation.reportWarning("Sensor Fault on Angle Motor ID:"+mAngleMotor.getDeviceId(), false);
-        }
-         */
+        // Set the desired angle of the swerve module
+        setAngle(desiredState);
+
+        // Set the desired speed of the swerve module
+        setSpeed(desiredState, isOpenLoop);
     }
 
+    // Sets the speed of the swerve module's drive motor (open-loop or closed-loop control)
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop)
     {
-       
-        if(isOpenLoop)
+        if (isOpenLoop)
         {
+            // In open-loop, set the motor speed as a percentage of the maximum speed
             double percentOutput = desiredState.speedMetersPerSecond / SwerveConfig.maxSpeed;
-            mDriveMotor.set(percentOutput);
+            mDriveMotor.set(percentOutput);  // Set the speed of the drive motor as a percentage
             return;
         }
- 
+
+        // In closed-loop, set the motor speed using the PID controller
         double velocity = desiredState.speedMetersPerSecond;
-        
+
+        // Get the closed-loop controller for the drive motor
         SparkClosedLoopController controller = mDriveMotor.getClosedLoopController();
+
+        // Set the desired velocity as a reference for closed-loop control
         controller.setReference(velocity, ControlType.kVelocity);
-     // Keep It Up :)   
+        // Keep It Up :)
     }
     
+    /* Deleting this killed the code */
     public void setSpeed2(double s){
         //suck my ballz
 
     }
     
+    // Sets the angle of the swerve module's angle motor based on the desired state
     private void setAngle(SwerveModuleState desiredState)
     {
-        if(Math.abs(desiredState.speedMetersPerSecond) <= (SwerveConfig.maxSpeed *0.01)) //dead zone for small inputs
+        // If the speed is very low (within a 1% threshold), stop the motor to avoid jittering
+        if (Math.abs(desiredState.speedMetersPerSecond) <= (SwerveConfig.maxSpeed * 0.01))  // Dead zone for small inputs
         {
-            mAngleMotor.stopMotor();
+            mAngleMotor.stopMotor();  // Stop the angle motor
             return;
-
         }
-        Rotation2d angle = desiredState.angle; 
-        //Prevent rotating module if speed is less then 1%. Prevents Jittering.
-        
+
+        // Get the desired angle for the module
+        Rotation2d angle = desiredState.angle;
+
+        // Prevent rotating the module if speed is below the threshold to avoid unnecessary movement
         SparkClosedLoopController controller = mAngleMotor.getClosedLoopController();
-        
+
+        // Get the angle reference in degrees for the controller
         double degReference = angle.getDegrees();
-     
-       
-        
-        controller.setReference (degReference, ControlType.kPosition);
-        
+
+        // Set the desired angle as a reference for closed-loop position control
+        controller.setReference(degReference, ControlType.kPosition);
     }
 
-   
-
+    // Returns the current angle of the module (from the encoder)
     private Rotation2d getAngle()
     {
+        // Return the angle based on the encoder's current position
         return Rotation2d.fromDegrees(encoder.getPosition());
     }
 
+    // Returns the current absolute angle of the module from the CANcoder
     public Rotation2d getCanCoder()
     {
-        
-        return Rotation2d.fromDegrees((angleEncoder.getAbsolutePosition().getValue().in(Degrees))); //*360 
-        //return getAngle();
+        // Get the absolute position from the CANcoder and return it as a Rotation2d object
+        return Rotation2d.fromDegrees((angleEncoder.getAbsolutePosition().getValue().in(Degrees))); // Returns the absolute angle in degrees
     }
 
-    public int getModuleNumber() 
+    // Getter for the module number (ID)
+    public int getModuleNumber()
     {
-        return moduleNumber;
+        return moduleNumber;  // Return the module's unique ID
     }
 
+    // Setter for the module number (ID)
     public void setModuleNumber(int moduleNumber) 
     {
         this.moduleNumber = moduleNumber;
