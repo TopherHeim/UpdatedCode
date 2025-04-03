@@ -16,7 +16,6 @@ This repository contains the source code for the **WiredDevils5498** FRC (FIRST 
 - [Features](#features)
 - [Controls](#controls)
 - [How to Use](#how-to-use)
-- [Contributing](#contributing)
 - [License](#license)
 
 ---
