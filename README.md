@@ -76,7 +76,7 @@ These instructions are mostly followable from Step
 
 12. Angle Motor PID Values: <br><b>If you are using a supported module, this value will be automatically set. If you are not, or prefer a more or less aggressive response, you can use the below instructions to tune.</b> 
     * To tune start with a low P value (0.01).
-    * Multiply by 10 until the module starts oscilating around the set point
+    * Multiply by 2 until the module starts oscilating around the set point
     * Scale back by searching for the value (for example, if it starts oscillating at a P of 10, then try (10 -> 5 -> 7.5 -> etc)) until the module doesn't oscillate around the setpoint.
     * If there is any overshoot you can add in some D by repeating the same process, leave at 0 if not. Always leave I at 0.
 
