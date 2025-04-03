@@ -32,7 +32,7 @@ The **WiredDevils5498** robot features a **swerve drive system** that allows pre
 
 ## **Features**
 
-- **Autonomous Mode**: The robot can execute a set of predefined actions using **PathPlannerLib** for path following. (hopefully)
+- **Autonomous Mode**: The robot can execute a set of predefined actions using **PathPlannerLib** for path following.
 - **Teleoperated Mode**: Controlled via **joysticks** or **gamepad** input for manual operation.
 - **Subsystem Control**: The robot can control multiple subsystems (arm, shooter, etc.) based on input from the driver.
 
